@@ -24,7 +24,7 @@ class PredictionPipeline:
     def __init__(self, artifacts_dir: Path = ROOT_DIR / "artifacts"):
         try:
             self.model = load_object(artifacts_dir / MODEL_FILE)
-            self.similarity_model = load_object(artifacts_dir / SIMILARITY_MODEL_FILE)
+            self.similarity_models = load_object(artifacts_dir / SIMILARITY_MODEL_FILE)
             mappings = load_object(artifacts_dir / MAPPINGS_FILE)
             self.items = pd.read_parquet(artifacts_dir / ITEMS_FILE)
             self.history = sp.load_npz(artifacts_dir / HISTORY_FILE).tocsr()
@@ -65,8 +65,11 @@ class PredictionPipeline:
         return self._to_frame(recs[0], scores[0])
 
     def similar_games(self, app_id: int, k: int = 10) -> pd.DataFrame:
-        """Games closest to `app_id` by tags and description."""
-        recs, scores = self.similarity_model.similar_items(self._item_indices([app_id])[0], k=k)
+        """Games closest to `app_id` by tags and description, or by co-play when it has no metadata."""
+        item_idx = self._item_indices([app_id])[0]
+        recs, scores = self.similarity_models["content"].similar_items(item_idx, k=k)
+        if len(recs) == 0:
+            recs, scores = self.similarity_models["collaborative"].similar_items(item_idx, k=k)
         return self._to_frame(recs, scores)
 
 

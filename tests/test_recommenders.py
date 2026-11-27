@@ -42,6 +42,18 @@ def test_als_fold_in_matches_new_user_shape(data):
     assert model.score(new_user).shape == (1, history.shape[1])
 
 
+def test_similar_items_skips_games_without_metadata(data):
+    items = data.items.copy()
+    items.at[0, "tags"], items.at[0, "description"] = [], ""
+    history, _ = data.matrices(data.train)
+    model = build_model("content", n_neighbors=5).fit(history, items)
+
+    neighbors, scores = model.similar_items(0, k=5)
+    assert len(neighbors) == 0
+    neighbors, scores = model.similar_items(1, k=5)
+    assert len(neighbors) > 0 and np.all(scores > 0)
+
+
 def test_param_grid_expands_combinations():
     spec = {"params": {"a": 1, "b": 2}, "grid": {"b": [3, 4], "c": [5]}}
     assert param_grid(spec) == [{"a": 1, "b": 3, "c": 5}, {"a": 1, "b": 4, "c": 5}]

@@ -6,7 +6,8 @@ import scipy.sparse as sp
 
 from src.components.data_transformation import InteractionData
 from src.components.model_evaluation import evaluate_model, users_with_targets
-from src.components.recommenders import BaseRecommender, ContentBasedRecommender, build_model
+from src.components.recommenders import (BaseRecommender, ContentBasedRecommender, ItemKNNRecommender,
+                                         build_model)
 from src.configuration.configuration import ModelTrainerConfig
 from src.constant import HISTORY_FILE, MODEL_FILE, SEEN_FILE, SIMILARITY_MODEL_FILE, TUNING_REPORT_FILE
 from src.exception import CustomException
@@ -85,10 +86,14 @@ class ModelTrainer:
             model = build_model(name, **best_params[name]).fit(history, data.items)
             save_object(model, artifacts_dir / MODEL_FILE)
 
-            # Content model powers "games like this one" for any game in the catalogue
-            content_params = best_params.get(ContentBasedRecommender.name, {})
-            similarity_model = ContentBasedRecommender(**content_params).fit(history, data.items)
-            save_object(similarity_model, artifacts_dir / SIMILARITY_MODEL_FILE)
+            # "Games like this one": content similarity first, co-play similarity for games without metadata
+            similarity_models = {
+                "content": ContentBasedRecommender(**best_params.get(ContentBasedRecommender.name, {})),
+                "collaborative": ItemKNNRecommender(**best_params.get(ItemKNNRecommender.name, {})),
+            }
+            for similarity_model in similarity_models.values():
+                similarity_model.fit(history, data.items)
+            save_object(similarity_models, artifacts_dir / SIMILARITY_MODEL_FILE)
 
             sp.save_npz(artifacts_dir / HISTORY_FILE, history)
             sp.save_npz(artifacts_dir / SEEN_FILE, seen)

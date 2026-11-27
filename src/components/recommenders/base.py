@@ -76,4 +76,5 @@ class SimilarityRecommender(BaseRecommender):
     def similar_items(self, item_idx: int, k: int = 10) -> tuple[np.ndarray, np.ndarray]:
         row = self.similarity[item_idx].toarray().ravel()
         top = np.argsort(-row)[:k]
+        top = top[row[top] > 0]  # items without neighbours return an empty result
         return top, row[top]
