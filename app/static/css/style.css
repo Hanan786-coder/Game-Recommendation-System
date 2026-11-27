@@ -1,17 +1,17 @@
-/* Next Game: cobalt rank numerals on cool paper, everything else kept quiet. */
+/* Next Game: forest-green rank numerals on sage paper, brass for what you picked. */
 
 :root {
   color-scheme: light;
 
-  --paper: #f4f3fb;
-  --ink: #1c1838;
-  --cobalt: #3346f0;
-  --cobalt-deep: #2232c4;
-  --lilac: #dcd6ff;
-  --butter: #ffd64a;
-  --muted: #6a6688;
-  --line: #cfcae8;
-  --white: #ffffff;
+  --paper: #eef1ea;       /* pale sage */
+  --ink: #1e2a22;         /* green-black */
+  --accent: #1f6b4a;      /* forest green: rank numerals, links, buttons */
+  --accent-deep: #17543a;
+  --tint: #d5e0cf;        /* light moss: tags, tray, hover */
+  --highlight: #e8b949;   /* brass: your picks and "because you liked" */
+  --muted: #65705f;
+  --line: #c5cfbf;
+  --white: #fafbf8;
   --danger: #b3261e;
 
   --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", sans-serif;
@@ -52,7 +52,7 @@ input { font: inherit; color: inherit; }
 button { cursor: pointer; }
 
 :focus-visible {
-  outline: 3px solid var(--cobalt);
+  outline: 3px solid var(--accent);
   outline-offset: 2px;
 }
 
@@ -119,7 +119,7 @@ h1 {
   gap: 0.25rem;
   padding: 0.25rem;
   margin-bottom: 1.5rem;
-  background: var(--lilac);
+  background: var(--tint);
   border-radius: 999px;
 }
 
@@ -186,13 +186,13 @@ input::placeholder { color: var(--muted); }
   aspect-ratio: 460 / 215;
   object-fit: cover;
   border-radius: 2px;
-  background: var(--lilac);
+  background: var(--tint);
 }
 
 .option-year { color: var(--muted); font-size: var(--step--1); }
 
 .option[aria-selected="true"],
-.option:hover { background: var(--lilac); }
+.option:hover { background: var(--tint); }
 
 .option-empty { padding: 0.75rem; color: var(--muted); }
 
@@ -211,7 +211,7 @@ input::placeholder { color: var(--muted); }
   align-items: center;
   gap: 0.5rem;
   padding: 0.25rem 0.25rem 0.25rem 0.25rem;
-  background: var(--butter);
+  background: var(--highlight);
   border-radius: var(--radius);
   font-weight: 700;
   font-size: var(--step--1);
@@ -236,7 +236,7 @@ input::placeholder { color: var(--muted); }
   line-height: 1;
 }
 
-.chip-remove:hover { background: rgba(28, 24, 56, 0.12); }
+.chip-remove:hover { background: rgba(30, 42, 34, 0.12); }
 
 .picked-empty {
   margin: 1rem 0 0;
@@ -249,13 +249,13 @@ input::placeholder { color: var(--muted); }
   padding: 0.85rem 1.6rem;
   border: 0;
   border-radius: var(--radius);
-  background: var(--cobalt);
+  background: var(--accent);
   color: var(--white);
   font-weight: 700;
   font-size: var(--step-1);
 }
 
-.button-primary:hover:not(:disabled) { background: var(--cobalt-deep); }
+.button-primary:hover:not(:disabled) { background: var(--accent-deep); }
 
 .button-primary:disabled {
   background: var(--line);
@@ -287,7 +287,7 @@ input::placeholder { color: var(--muted); }
   color: var(--ink);
 }
 
-.sample:hover { background: var(--lilac); }
+.sample:hover { background: var(--tint); }
 
 .form-error {
   margin: 1rem 0 0;
@@ -314,7 +314,7 @@ input::placeholder { color: var(--muted); }
   padding: 0;
   border: 0;
   border-radius: var(--radius);
-  background: var(--lilac);
+  background: var(--tint);
   overflow: hidden;
 }
 
@@ -324,7 +324,7 @@ input::placeholder { color: var(--muted); }
   object-fit: cover;
 }
 
-.tray-item[aria-pressed="true"] { outline: 4px solid var(--butter); outline-offset: -4px; }
+.tray-item[aria-pressed="true"] { outline: 4px solid var(--highlight); outline-offset: -4px; }
 
 .tray-item[aria-pressed="true"]::after {
   content: "Added";
@@ -332,7 +332,7 @@ input::placeholder { color: var(--muted); }
   inset: auto 0.3rem 0.3rem auto;
   padding: 0.05rem 0.4rem;
   border-radius: 2px;
-  background: var(--butter);
+  background: var(--highlight);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -416,7 +416,7 @@ input::placeholder { color: var(--muted); }
   font-weight: 900;
   font-size: 5.5rem;
   line-height: 1;
-  color: var(--cobalt);
+  color: var(--accent);
   -webkit-text-stroke: 0.12em var(--paper);
   paint-order: stroke fill;
   font-variant-numeric: lining-nums;
@@ -427,14 +427,14 @@ input::placeholder { color: var(--muted); }
   aspect-ratio: 460 / 215;
   object-fit: cover;
   border-radius: var(--radius);
-  background: var(--lilac);
+  background: var(--tint);
 }
 
 .cover-fallback {
   width: 100%;
   aspect-ratio: 460 / 215;
   overflow: hidden;
-  background: var(--lilac);
+  background: var(--tint);
   border-radius: var(--radius);
   display: grid;
   place-items: center;
@@ -467,7 +467,7 @@ input::placeholder { color: var(--muted); }
   display: inline-block;
   margin: 0.6rem 0 0;
   padding: 0.1rem 0.45rem;
-  background: var(--butter);
+  background: var(--highlight);
   border-radius: 2px;
   font-size: var(--step--1);
 }
@@ -484,7 +484,7 @@ input::placeholder { color: var(--muted); }
 .tags li {
   padding: 0.05rem 0.55rem;
   border-radius: 999px;
-  background: var(--lilac);
+  background: var(--tint);
   font-size: 0.8125rem;
 }
 
@@ -494,13 +494,13 @@ input::placeholder { color: var(--muted); }
   padding: 0;
   border: 0;
   background: none;
-  color: var(--cobalt);
+  color: var(--accent);
   font-weight: 700;
   text-decoration: underline;
   text-underline-offset: 0.2em;
 }
 
-.pick-more:hover { color: var(--cobalt-deep); }
+.pick-more:hover { color: var(--accent-deep); }
 
 /* Rank one gets the full row and a much larger numeral */
 .pick:first-child {
@@ -548,7 +548,7 @@ input::placeholder { color: var(--muted); }
   position: fixed;
   inset: 0;
   z-index: 20;
-  background: rgba(28, 24, 56, 0.45);
+  background: rgba(30, 42, 34, 0.45);
 }
 
 .drawer {
@@ -614,7 +614,7 @@ input::placeholder { color: var(--muted); }
   padding: 0;
   border: 0;
   background: none;
-  color: var(--cobalt);
+  color: var(--accent);
   font-weight: 700;
   font-size: var(--step--1);
   text-decoration: underline;
