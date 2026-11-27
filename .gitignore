@@ -1,3 +1,17 @@
+# Data and generated outputs
 data/raw
 data/processed
+artifacts/
+logs/
 *.csv
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/

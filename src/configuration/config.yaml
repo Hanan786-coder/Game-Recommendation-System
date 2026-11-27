@@ -1,0 +1,48 @@
+# All paths are relative to the project root.
+
+data_ingestion:
+  raw_dir: data/raw
+  processed_dir: data/processed
+  user_sample_mod: 20          # keep users where user_id % 20 == 0 (~5% of users)
+  min_user_interactions: 3
+  min_item_interactions: 20
+  chunk_size: 1000000
+
+data_transformation:
+  processed_dir: data/processed
+  artifacts_dir: artifacts
+  val_per_user: 1              # most recent interactions held out per user
+  test_per_user: 1
+
+model_trainer:
+  artifacts_dir: artifacts
+  k: 10
+  selection_metric: ndcg
+  tuning_sample_users: 20000   # validation users used while tuning (speed)
+  batch_size: 2048
+  random_state: 42
+
+  # `params` are defaults, `grid` values are searched on the validation split.
+  models:
+    popularity:
+      params: {}
+    item_knn:
+      params: {n_neighbors: 100}
+      grid:
+        n_neighbors: [50, 100, 300]
+    content:
+      params: {n_neighbors: 100, tag_weight: 1.0}
+      grid:
+        tag_weight: [0.5, 1.0, 2.0]
+    als:
+      params: {factors: 64, regularization: 0.05, iterations: 20, alpha: 2.0, random_state: 42}
+      grid:
+        factors: [64, 128]
+        regularization: [0.01, 0.1]
+        alpha: [1.0, 5.0]
+
+model_evaluation:
+  artifacts_dir: artifacts
+  k: 10
+  batch_size: 2048
+  selection_metric: ndcg
