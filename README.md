@@ -50,6 +50,7 @@ the catalogue. See [`notebooks/02_model_experiments.ipynb`](notebooks/02_model_e
 
 ```
 ├── .github/workflows/tests.yml   # CI: runs the test suite
+├── app/                          # Flask web app (routes, service, templates, static)
 ├── artifacts/                    # trained models, mappings, reports (generated)
 ├── data/
 │   ├── raw/                      # Kaggle files (downloaded)
@@ -102,6 +103,31 @@ python -m src.pipeline.prediction_pipeline --user-id 51580            # existing
 python -m src.pipeline.prediction_pipeline --liked 367520 105600      # new user (Hollow Knight, Terraria)
 python -m src.pipeline.prediction_pipeline --similar-to 413150        # games like Stardew Valley
 ```
+
+## Web App
+
+A small Flask site, **Next Game**, serves the trained model locally. Start it after training:
+
+```bash
+python -m app.main            # http://127.0.0.1:5000
+```
+
+- **Pick games:** search the catalogue or tap a popular cover, then get a ranked top 10. Each pick shows which
+  of your games it came from.
+- **Use a player ID:** see a real player's liked games next to their recommendations (sample IDs are provided).
+- **More like this:** open similar games for any result and add them to your picks.
+
+The page calls a JSON API that is also usable on its own:
+
+| Endpoint | Returns |
+|---|---|
+| `GET /api/search?q=hollow` | Matching games |
+| `POST /api/recommendations` with `{"app_ids": [367520, 105600]}` | Top-K for a new user |
+| `GET /api/users/<user_id>/recommendations` | A player's history and top-K |
+| `GET /api/games/<app_id>/similar` | Similar games |
+| `GET /api/model` | Selected model and its test metrics |
+
+Cover art is loaded from Steam's CDN, so it needs an internet connection.
 
 Run the tests:
 
