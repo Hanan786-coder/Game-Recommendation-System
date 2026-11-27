@@ -43,8 +43,12 @@ class ModelEvaluation:
     def __init__(self, config: ModelEvaluationConfig):
         self.config = config
 
-    def evaluate_on_test(self, models: dict[str, BaseRecommender], data: InteractionData) -> dict:
-        """Scores models fitted on train+val against each user's most recent (test) games."""
+    def evaluate_on_test(self, models: dict[str, BaseRecommender], data: InteractionData,
+                         selected_model: str) -> dict:
+        """Scores models fitted on train+val against each user's most recent (test) games.
+
+        `selected_model` was chosen on validation; test scores are reported, not used for selection.
+        """
         try:
             history, seen = data.matrices(data.train, data.val)
             target, _ = data.matrices(data.test)
@@ -59,13 +63,12 @@ class ModelEvaluation:
                 logger.info(f"[test] {name}: {metrics}")
 
             metric = self.config.selection_metric
-            best = max(results, key=lambda name: results[name]["metrics"][metric])
             report = {"k": self.config.k, "split": "test", "n_users": int(len(users)),
-                      "selection_metric": metric, "best_model": best, "models": results}
+                      "selection_metric": metric, "selected_model": selected_model, "models": results}
 
             save_json(report, self.config.artifacts_dir / EVALUATION_REPORT_FILE)
-            logger.info(f"Best model on test: {best} ({metric}@{self.config.k} = "
-                        f"{results[best]['metrics'][metric]})")
+            logger.info(f"Selected model {selected_model}: test {metric}@{self.config.k} = "
+                        f"{results[selected_model]['metrics'][metric]}")
             return report
         except Exception as e:
             raise CustomException(e) from e

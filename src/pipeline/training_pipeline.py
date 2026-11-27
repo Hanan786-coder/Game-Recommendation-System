@@ -30,15 +30,16 @@ class TrainingPipeline:
 
         logger.info("Stage 3/4: hyperparameter tuning on validation")
         trainer = ModelTrainer(self.config.get_model_trainer_config())
-        best_params = trainer.tune(data)
+        best_params, selected = trainer.tune(data)
 
         logger.info("Stage 4/4: evaluation on test")
         history, _ = data.matrices(data.train, data.val)
         models = trainer.fit_models(best_params, history, data)
-        report = ModelEvaluation(self.config.get_model_evaluation_config()).evaluate_on_test(models, data)
+        report = ModelEvaluation(self.config.get_model_evaluation_config()).evaluate_on_test(
+            models, data, selected)
 
-        # The winner is retrained on every interaction before it is saved for serving
-        trainer.train_serving_model(report["best_model"], best_params, data)
+        # The selected model is retrained on every interaction before it is saved for serving
+        trainer.train_serving_model(selected, best_params, data)
         logger.info(f"Training pipeline finished in {(time.perf_counter() - start) / 60:.1f} min")
         return report
 

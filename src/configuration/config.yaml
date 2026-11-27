@@ -29,7 +29,7 @@ model_trainer:
     item_knn:
       params: {n_neighbors: 100}
       grid:
-        n_neighbors: [50, 100, 300]
+        n_neighbors: [100, 300, 1000]
     content:
       params: {n_neighbors: 100, tag_weight: 1.0}
       grid:
@@ -37,9 +37,9 @@ model_trainer:
     als:
       params: {factors: 64, regularization: 0.05, iterations: 20, alpha: 2.0, random_state: 42}
       grid:
-        factors: [64, 128]
-        regularization: [0.01, 0.1]
-        alpha: [1.0, 5.0]
+        factors: [32, 64]
+        regularization: [0.1, 1.0]
+        alpha: [5.0, 15.0, 40.0]
 
 model_evaluation:
   artifacts_dir: artifacts

@@ -26,8 +26,11 @@ class ModelTrainer:
     def __init__(self, config: ModelTrainerConfig):
         self.config = config
 
-    def tune(self, data: InteractionData) -> dict[str, dict]:
-        """Grid search per model on train -> validation. Returns the best params per model."""
+    def tune(self, data: InteractionData) -> tuple[dict[str, dict], str]:
+        """Grid search per model on train -> validation.
+
+        Returns the best params per model and the name of the model with the best validation score.
+        """
         try:
             history, seen = data.matrices(data.train)
             target, _ = data.matrices(data.val)
@@ -51,11 +54,16 @@ class ModelTrainer:
 
                 best = max(trials, key=lambda t: t["metrics"][metric])
                 best_params[name] = best["params"]
-                results[name] = {"best_params": best["params"], "trials": trials}
+                results[name] = {"best_params": best["params"], "best_metrics": best["metrics"], "trials": trials}
+
+            # Model selection happens here, on validation, so the test split stays untouched
+            selected = max(results, key=lambda name: results[name]["best_metrics"][metric])
+            logger.info(f"Selected model on validation: {selected}")
 
             save_json({"k": self.config.k, "selection_metric": metric, "n_users": int(len(users)),
-                       "models": results}, self.config.artifacts_dir / TUNING_REPORT_FILE)
-            return best_params
+                       "selected_model": selected, "models": results},
+                      self.config.artifacts_dir / TUNING_REPORT_FILE)
+            return best_params, selected
         except Exception as e:
             raise CustomException(e) from e
 
