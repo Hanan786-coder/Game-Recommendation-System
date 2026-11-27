@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Next Game</title>
+  <meta name="description" content="Pick a few games you loved and get ten Steam games to play next.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;700&family=Big+Shoulders+Display:wght@700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="masthead">
+    <a class="wordmark" href="/">Next Game</a>
+    <p class="masthead-note">Recommendations learned from {{ "{:,}".format(info.players) }} Steam players</p>
+  </header>
+
+  <main>
+    <section class="picker" aria-labelledby="page-title">
+      <div class="picker-main">
+        <h1 id="page-title">What should you play next?</h1>
+        <p class="lede">Add a few games you loved. You'll get ten picks that players with the same taste enjoyed.</p>
+
+        <div class="mode" role="tablist" aria-label="How to get recommendations">
+          <button class="mode-tab" role="tab" id="tab-games" aria-controls="panel-games" aria-selected="true">Pick games</button>
+          <button class="mode-tab" role="tab" id="tab-player" aria-controls="panel-player" aria-selected="false" tabindex="-1">Use a player ID</button>
+        </div>
+
+        <div class="panel" id="panel-games" role="tabpanel" aria-labelledby="tab-games">
+          <label class="field-label" for="search">Search {{ "{:,}".format(info.games) }} games</label>
+          <div class="search">
+            <input id="search" type="search" autocomplete="off" placeholder="Hollow Knight, Factorio, Portal 2…"
+                   role="combobox" aria-expanded="false" aria-controls="suggestions" aria-autocomplete="list">
+            <ul class="suggestions" id="suggestions" role="listbox" aria-label="Matching games" hidden></ul>
+          </div>
+
+          <ul class="picked" id="picked" aria-label="Games you picked"></ul>
+          <p class="picked-empty" id="picked-empty">No games yet. Search above, or tap a cover from the popular list.</p>
+
+          <button class="button-primary" id="recommend" type="button" disabled>Recommend games</button>
+        </div>
+
+        <div class="panel" id="panel-player" role="tabpanel" aria-labelledby="tab-player" hidden>
+          <form class="player-form" id="player-form">
+            <label class="field-label" for="player-id">Steam player ID from the dataset</label>
+            <div class="player-row">
+              <input id="player-id" inputmode="numeric" pattern="[0-9]*" autocomplete="off" required>
+              <button class="button-primary" type="submit">Show recommendations</button>
+            </div>
+          </form>
+          <p class="samples" id="samples">Try a sample player:</p>
+        </div>
+
+        <p class="form-error" id="form-error" role="alert" hidden></p>
+      </div>
+
+      <aside class="tray" aria-labelledby="tray-title">
+        <h2 id="tray-title">Most liked right now</h2>
+        <div class="tray-grid" id="tray"></div>
+      </aside>
+    </section>
+
+    <section class="results" id="results" aria-labelledby="results-title" hidden>
+      <header class="results-head">
+        <h2 id="results-title" tabindex="-1">Your next ten games</h2>
+        <p class="results-sub" id="results-sub"></p>
+      </header>
+      <div class="history" id="history" hidden>
+        <h3>This player liked</h3>
+        <ul class="history-strip" id="history-strip"></ul>
+      </div>
+      <ol class="ranking" id="ranking"></ol>
+    </section>
+  </main>
+
+  <div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" hidden>
+    <div class="drawer-head">
+      <h2 id="drawer-title">More like this</h2>
+      <button class="drawer-close" id="drawer-close" type="button" aria-label="Close">Close</button>
+    </div>
+    <p class="drawer-sub" id="drawer-sub"></p>
+    <ul class="drawer-list" id="drawer-list"></ul>
+  </aside>
+
+  <footer class="colophon">
+    {% if info.metrics %}
+    <p>
+      Ranked by an {{ info.model }} model trained on Steam reviews. When tested on the game each player reviewed
+      next, it appeared in their top {{ info.k }} for {{ "%.1f"|format(info.metrics.hit_rate * 100) }}% of players{% if info.baseline %},
+      {{ "%.1f"|format(info.metrics.hit_rate / info.baseline.hit_rate) }}× as often as simply suggesting the most popular games{% endif %}.
+    </p>
+    {% endif %}
+    <p>Cover art is loaded from Steam. Game data from the Kaggle dataset “Game Recommendations on Steam”.</p>
+  </footer>
+
+  <template id="game-option">
+    <li class="option" role="option"><img alt="" loading="lazy"><span class="option-title"></span><span class="option-year"></span></li>
+  </template>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
+</body>
+</html>
